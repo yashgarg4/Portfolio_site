@@ -1,13 +1,9 @@
-// Portfolio JavaScript functionality with AI Assistant
-
 // Gemini API Configuration
-// IMPORTANT: Replace 'YOUR_GEMINI_API_KEY_HERE' with your actual Gemini API key
-// Get your free API key from: https://makersuite.google.com/app/apikey
 const GEMINI_API_KEY = "AIzaSyDCohfEa_vCSUj39CeWAD2NHzidlwzS44o";
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
-// Yash's portfolio context for AI responses
+// portfolio context for AI responses
 const PORTFOLIO_CONTEXT = `
 You are Yash Garg's AI assistant on his portfolio website. Here's his information:
 
