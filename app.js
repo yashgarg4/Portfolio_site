@@ -54,10 +54,6 @@ let conversationHistory = [];
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM loaded, initializing modern portfolio...");
 
-  // =====================
-  // NAVIGATION FUNCTIONALITY
-  // =====================
-
   // Get all navigation elements
   const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
   const navMenu = document.querySelector(".nav-menu");
