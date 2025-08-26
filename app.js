@@ -1041,20 +1041,4 @@ document.addEventListener("DOMContentLoaded", function () {
       parallax.style.transform = `translateY(${speed}px)`;
     }
   });
-
-  console.log(
-    "Modern portfolio website with AI Assistant and Projects Carousel loaded successfully!"
-  );
-  console.log("✅ Navigation links configured");
-  console.log("✅ Projects carousel with touch/swipe support configured");
-  console.log("✅ AI Chatbot configured");
-  console.log("✅ Project buttons configured");
-  console.log("✅ Contact form configured");
-  console.log("✅ Skills & Technologies section configured");
-  console.log("✅ Certifications section configured");
-  console.log("✅ Education section configured");
-  console.log("✅ All interactive elements configured");
-  console.log(
-    "Note: To enable full AI functionality, please replace GEMINI_API_KEY with your actual API key from https://makersuite.google.com/app/apikey"
-  );
 });
