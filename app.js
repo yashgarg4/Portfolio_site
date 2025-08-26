@@ -1,9 +1,10 @@
 // Gemini API Configuration
+
 const GEMINI_API_KEY = "AIzaSyDCohfEa_vCSUj39CeWAD2NHzidlwzS44o";
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
-// portfolio context for AI responses
+// Yash's portfolio context for AI responses
 const PORTFOLIO_CONTEXT = `
 You are Yash Garg's AI assistant on his portfolio website. Here's his information:
 
@@ -29,6 +30,11 @@ PROJECTS:
 1. AI Travel Planner App: Built with Streamlit, CrewAI, Python, Gemini LLM. Generates personalized multi-day itineraries with map-based sightseeing, cost estimation, cultural tips.
 2. AI Job Application Assistant: Built with Streamlit, CrewAI, Python, LLMs. Parses resumes and JDs, generates tailored resumes and cover letters.
 3. AI Financial Analyst Assistant: Built with Python, CrewAI, LLM, Streamlit. Automates financial analysis and company research.
+4. Real-time Chat Application: Built with React, Node.js, Socket.io, MongoDB. Scalable real-time chat with WebSocket connections, user authentication, file sharing.
+5. E-commerce Analytics Dashboard: Built with React, D3.js, Express, PostgreSQL. Comprehensive analytics with real-time sales tracking and interactive visualizations.
+6. Automated Testing Framework: Built with Jest, Cypress, GitHub Actions, Docker. Comprehensive testing framework reducing manual testing time by 70%.
+7. IoT Device Manager: Built with Node.js, MQTT, InfluxDB, Vue.js. Scalable IoT platform with real-time monitoring and remote control capabilities.
+8. Social Media Scheduler: Built with Python, Django, Celery, Social APIs. AI-powered content optimization with analytics tracking and multi-platform posting.
 
 EDUCATION:
 - Bachelor of Technology in Information Technology
@@ -50,9 +56,17 @@ Provide helpful, professional responses about Yash Garg's background, skills, ex
 let isChatboxOpen = false;
 let conversationHistory = [];
 
+// Global variables for projects carousel
+let currentScrollPosition = 0;
+let isScrolling = false;
+
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, initializing modern portfolio...");
+  console.log(
+    "DOM loaded, initializing modern portfolio with projects carousel..."
+  );
+
+  // NAVIGATION FUNCTIONALITY
 
   // Get all navigation elements
   const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
@@ -211,9 +225,191 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // =====================
+  // PROJECTS CAROUSEL FUNCTIONALITY
+
+  const projectsCarousel = document.getElementById("projectsCarousel");
+  const projectsPrev = document.getElementById("projectsPrev");
+  const projectsNext = document.getElementById("projectsNext");
+  const projectCards = document.querySelectorAll(".project-card");
+
+  console.log("Projects carousel elements found:", {
+    projectsCarousel: !!projectsCarousel,
+    projectsPrev: !!projectsPrev,
+    projectsNext: !!projectsNext,
+    projectCards: projectCards.length,
+  });
+
+  if (projectsCarousel && projectsPrev && projectsNext) {
+    const cardWidth = 350; // Fixed card width
+    const cardGap = 24; // Gap between cards
+    const scrollAmount = cardWidth + cardGap;
+
+    // Get the maximum scroll position
+    function getMaxScroll() {
+      return projectsCarousel.scrollWidth - projectsCarousel.clientWidth;
+    }
+
+    // Update carousel navigation buttons
+    function updateCarouselButtons() {
+      const scrollLeft = projectsCarousel.scrollLeft;
+      const maxScroll = getMaxScroll();
+
+      // Update prev button
+      if (scrollLeft <= 0) {
+        projectsPrev.style.opacity = "0.5";
+        projectsPrev.style.pointerEvents = "none";
+      } else {
+        projectsPrev.style.opacity = "1";
+        projectsPrev.style.pointerEvents = "auto";
+      }
+
+      // Update next button
+      if (scrollLeft >= maxScroll - 10) {
+        // Small tolerance for rounding
+        projectsNext.style.opacity = "0.5";
+        projectsNext.style.pointerEvents = "none";
+      } else {
+        projectsNext.style.opacity = "1";
+        projectsNext.style.pointerEvents = "auto";
+      }
+    }
+
+    // Scroll carousel to specific position
+    function scrollCarousel(direction) {
+      if (isScrolling) return;
+
+      isScrolling = true;
+      const currentScroll = projectsCarousel.scrollLeft;
+      const maxScroll = getMaxScroll();
+
+      let newScrollPosition;
+
+      if (direction === "next") {
+        newScrollPosition = Math.min(currentScroll + scrollAmount, maxScroll);
+      } else {
+        newScrollPosition = Math.max(currentScroll - scrollAmount, 0);
+      }
+
+      projectsCarousel.scrollTo({
+        left: newScrollPosition,
+        behavior: "smooth",
+      });
+
+      // Reset scrolling flag after animation
+      setTimeout(() => {
+        isScrolling = false;
+        updateCarouselButtons();
+      }, 300);
+    }
+
+    // Previous button click handler
+    projectsPrev.addEventListener("click", function (e) {
+      e.preventDefault();
+      console.log("Projects carousel: previous clicked");
+      scrollCarousel("prev");
+    });
+
+    // Next button click handler
+    projectsNext.addEventListener("click", function (e) {
+      e.preventDefault();
+      console.log("Projects carousel: next clicked");
+      scrollCarousel("next");
+    });
+
+    // Touch/Swipe functionality for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isDragging = false;
+
+    projectsCarousel.addEventListener(
+      "touchstart",
+      function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        isDragging = true;
+      },
+      { passive: true }
+    );
+
+    projectsCarousel.addEventListener(
+      "touchmove",
+      function (e) {
+        if (!isDragging) return;
+
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+      },
+      { passive: true }
+    );
+
+    projectsCarousel.addEventListener(
+      "touchend",
+      function (e) {
+        if (!isDragging) return;
+        isDragging = false;
+
+        const deltaX = touchStartX - touchEndX;
+        const deltaY = Math.abs(touchStartY - touchEndY);
+        const minSwipeDistance = 50;
+
+        // Only process horizontal swipes (ignore vertical scrolling)
+        if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > deltaY) {
+          if (deltaX > 0) {
+            // Swiped left - show next
+            scrollCarousel("next");
+          } else {
+            // Swiped right - show previous
+            scrollCarousel("prev");
+          }
+        }
+      },
+      { passive: true }
+    );
+
+    // Mouse wheel support for horizontal scrolling
+    projectsCarousel.addEventListener(
+      "wheel",
+      function (e) {
+        // Prevent vertical scrolling when over carousel
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+          e.preventDefault();
+
+          if (!isScrolling) {
+            const direction = e.deltaX > 0 ? "next" : "prev";
+            scrollCarousel(direction);
+          }
+        }
+      },
+      { passive: false }
+    );
+
+    // Scroll event listener to update buttons
+    projectsCarousel.addEventListener("scroll", function () {
+      if (!isScrolling) {
+        updateCarouselButtons();
+      }
+    });
+
+    // Initialize carousel buttons
+    setTimeout(() => {
+      updateCarouselButtons();
+    }, 100);
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCarouselButtons();
+      }, 250);
+    });
+
+    console.log("Projects carousel functionality initialized successfully");
+  }
+
   // CONTACT FORM FUNCTIONALITY
-  // =====================
 
   const contactForm = document.getElementById("contactForm");
   const downloadResumeBtn = document.querySelector(".download-resume-btn");
@@ -323,9 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // =====================
   // AI ASSISTANT CHATBOT FUNCTIONALITY
-  // =====================
 
   const chatBubble = document.getElementById("chatBubble");
   const chatbox = document.getElementById("chatbox");
@@ -500,7 +694,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Getting AI response for:", userMessage);
 
     if (GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-      return "Hi! I'm Yash's AI assistant. To enable full AI functionality, please configure the Gemini API key in the JavaScript file. In the meantime, I can tell you that Yash is a Full-Stack Developer & AI Engineer at JioGames with expertise in JavaScript, Python, AI systems, and has built several impressive projects including an AI Travel Planner and Job Application Assistant. Feel free to ask me anything about his experience!";
+      return "Hi! I'm Yash's AI assistant. To enable full AI functionality, please configure the Gemini API key in the JavaScript file. In the meantime, I can tell you that Yash is a Full-Stack Developer & AI Engineer at JioGames with expertise in JavaScript, Python, AI systems, and has built several impressive projects including an AI Travel Planner, Job Application Assistant, Real-time Chat Application, E-commerce Analytics Dashboard, and more. Feel free to ask me anything about his experience!";
     }
 
     try {
@@ -556,7 +750,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ) {
         return "Yash has expertise in JavaScript, Python, C#, Java, and specializes in AI & Agentic Systems including LLMs, CrewAI, and Multi-Agent Systems. He's proficient with React, Node.js, Docker, Kubernetes, and has experience with Unity and Android development. His focus areas include full-stack development and AI system integration.";
       } else if (lowerMessage.includes("project")) {
-        return "Yash has built several impressive AI projects: an AI Travel Planner using CrewAI and Gemini LLM that generates personalized itineraries, an AI Job Application Assistant that matches resumes to job descriptions, and an AI Financial Analyst Assistant for automated financial analysis. All projects showcase his expertise in multi-agent AI systems.";
+        return "Yash has built 8 impressive projects including: AI Travel Planner, Job Application Assistant, Financial Analyst Assistant, Real-time Chat Application, E-commerce Analytics Dashboard, Automated Testing Framework, IoT Device Manager, and Social Media Scheduler. All showcase his expertise in full-stack development and AI systems. You can scroll through the projects carousel to see them all!";
       } else if (
         lowerMessage.includes("experience") ||
         lowerMessage.includes("job") ||
@@ -576,7 +770,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ) {
         return "You can reach Yash at yashgargg4@gmail.com or call him at +91 7428846924. Feel free to connect with him for opportunities, collaborations, or just to discuss technology and AI innovations!";
       } else {
-        return "I'd be happy to help you learn more about Yash! He's a Full-Stack Developer & AI Engineer currently working at JioGames. You can ask me about his skills, projects, work experience, education, or how to contact him. What would you like to know?";
+        return "I'd be happy to help you learn more about Yash! He's a Full-Stack Developer & AI Engineer currently working at JioGames. You can ask me about his skills, projects, work experience, education, or how to contact him. Check out the horizontal carousel of his 8 amazing projects! What would you like to know?";
       }
     }
   }
@@ -653,9 +847,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // =====================
   // PROJECT BUTTONS FUNCTIONALITY
-  // =====================
 
   const projectButtons = document.querySelectorAll(".project-btn");
   console.log("Project buttons found:", projectButtons.length);
@@ -698,9 +890,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // =====================
   // ANIMATION AND INTERACTION EFFECTS
-  // =====================
 
   function animateOnScroll() {
     const statCards = document.querySelectorAll(".stat-card");
@@ -853,9 +1043,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   console.log(
-    "Modern portfolio website with AI Assistant loaded successfully!"
+    "Modern portfolio website with AI Assistant and Projects Carousel loaded successfully!"
   );
   console.log("✅ Navigation links configured");
+  console.log("✅ Projects carousel with touch/swipe support configured");
   console.log("✅ AI Chatbot configured");
   console.log("✅ Project buttons configured");
   console.log("✅ Contact form configured");
